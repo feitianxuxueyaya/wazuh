@@ -155,9 +155,8 @@ class SyncWazuhdb:
         self.set_data_command = set_data_command
         self.data_retriever = data_retriever
 
-    async def sync(self):
+    async def sync(self, start_time):
         """Start sending information to master node."""
-        start_time = time.time()
         result = await self.worker.send_request(command=self.cmd+b'_p', data=b'')
         if isinstance(result, Exception):
             self.logger.error(f"Error asking for permission: {result}")
@@ -187,7 +186,7 @@ class SyncWazuhdb:
                                                             f'node: {task_id}')
 
             # Specify under which task_id the JSON can be found in the master.
-            await self.worker.send_request(command=self.cmd, data=task_id)
+            await self.worker.send_request(command=self.cmd, data=task_id + b' ' + str(start_time).encode())
             self.logger.debug(f"All chunks sent.")
         else:
             self.logger.info(f"Finished in {(time.time() - start_time):3f}s (0 chunks sent).")
@@ -528,7 +527,7 @@ class WorkerHandler(client.AbstractClient, c_common.WazuhCommon):
         """
         logger = self.task_loggers['Agent-info sync']
         data = json.loads(response)
-        msg = f"Finished in {(time.time()-self.agent_info_sync_status['date_start']):.3f}s ({data['updated_chunks']} " \
+        msg = f"Finished in {(time.time()-data['worker_start_time']):.3f}s ({data['updated_chunks']} " \
               f"chunks updated)."
         logger.info(msg) if not data['error_messages'] else logger.error(
             msg + f" There were {len(data['error_messages'])} chunks with errors: {data['error_messages']}")
@@ -608,9 +607,9 @@ class WorkerHandler(client.AbstractClient, c_common.WazuhCommon):
                 if self.connected:
                     logger.info("Starting.")
                     start_time = time.time()
-                    synced = await agent_info.sync()
-                    if synced:
-                        self.agent_info_sync_status['date_start'] = start_time
+                    synced = await agent_info.sync(start_time)
+                    # if synced:
+                    #     self.agent_info_sync_status['date_start'] = start_time
             except Exception as e:
                 logger.error(f"Error synchronizing agent info: {e}")
 

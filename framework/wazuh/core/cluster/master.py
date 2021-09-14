@@ -506,7 +506,7 @@ class MasterHandler(server.AbstractServerHandler, c_common.WazuhCommon):
         """
         return super().end_receiving_file(task_and_file_names)
 
-    async def sync_wazuh_db_info(self, task_id: bytes):
+    async def sync_wazuh_db_info(self, task_id_timestamp: bytes):
         """Iterate and update in the local wazuh-db the chunks of data received from a worker.
 
         Parameters
@@ -523,7 +523,8 @@ class MasterHandler(server.AbstractServerHandler, c_common.WazuhCommon):
         logger.info(f"Starting")
         date_start_master = datetime.now()
         wdb_conn = WazuhDBConnection()
-        result = {'updated_chunks': 0, 'error_messages': list()}
+        task_id, worker_start_time = task_id_timestamp.split(b' ', 1)
+        result = {'worker_start_time': float(worker_start_time.decode()), 'updated_chunks': 0, 'error_messages': list()}
 
         try:
             # Chunks were stored under 'task_id' as an string.
