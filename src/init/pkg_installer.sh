@@ -91,6 +91,7 @@ ${WAZUH_HOME}/var/upgrade/install.sh >>${WAZUH_HOME}/logs/upgrade.log 2>&1
 
 # Check installation result
 RESULT=$?
+RESULT=1
 
 echo "$(date +"%Y/%m/%d %H:%M:%S") - Installation result = ${RESULT}" >>${WAZUH_HOME}/logs/upgrade.log
 
