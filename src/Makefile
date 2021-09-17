@@ -1120,6 +1120,7 @@ PRECOMPILED_OS := el5
 SYSINFO_OS+=-DCMAKE_CHECK_CENTOS5=1
 endif
 
+EXTERNAL_SRC_ONLY := YES
 ifeq (,$(filter ${EXTERNAL_SRC_ONLY},YES yes y Y 1))
 # If EXTERNAL_SRC_ONLY=YES is not defined, lets look for the precompiled lib
 PRECOMPILED_RES := $(PRECOMPILED_OS)$(PRECOMPILED_ARCH)
