@@ -772,6 +772,7 @@ class MasterHandler(server.AbstractServerHandler, c_common.WazuhCommon):
 
                 # If the file is merged, create individual files from it.
                 if data['merged']:
+                    processed_files = 0
                     for file_path, file_data, file_time in wazuh.core.cluster.cluster.unmerge_info(
                             data['merge_type'], decompressed_files_path, data['merge_name']):
                         # Destination path.
@@ -824,7 +825,10 @@ class MasterHandler(server.AbstractServerHandler, c_common.WazuhCommon):
                                 else n_errors['errors'][data['cluster_item_key']] + 1
 
                         # Let other tasks (DAPI, etc) that may arrive while processing extra-valid files to be run.
-                        await asyncio.sleep(0)
+                        processed_files += 1
+                        if processed_files % max(
+                                1, self.cluster_items['intervals']['master']['ev_files_processed_before_await']) == 0:
+                            await asyncio.sleep(0)
 
                 # If the file is not merged, move it directly to the destination path.
                 else:

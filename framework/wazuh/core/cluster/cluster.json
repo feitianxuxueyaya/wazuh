@@ -103,7 +103,8 @@
         "master": {
             "recalculate_integrity": 8,
             "check_worker_lastkeepalive": 60,
-            "max_allowed_time_without_keepalive": 120
+            "max_allowed_time_without_keepalive": 120,
+            "ev_files_processed_before_await": 100
         },
 
         "communication":{
@@ -113,9 +114,7 @@
         }
     },
 
-    "sync_options": {
-        "get_agentinfo_newer_than": 1800
-    },
+    "sync_options": {},
 
     "distributed_api": {
         "enabled": true
