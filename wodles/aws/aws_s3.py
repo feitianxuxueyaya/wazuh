@@ -22,7 +22,7 @@
 #   12 - Invalid type of bucket
 #   13 - Unexpected error sending message to Wazuh
 #   14 - Empty bucket
-#   15 - Invalid VPC endpoint URL
+#   15 - Invalid endpoint URL
 
 import argparse
 import signal
@@ -3100,7 +3100,7 @@ def get_script_arguments():
     parser.add_argument('-st', '--sts_endpoint', type=str, dest='sts_endpoint', default=None,
                         help='URL for the VPC endpoint to use to obtain the STS token.')
     parser.add_argument('-se', '--service_endpoint', type=str, dest='service_endpoint', default=None,
-                        help='URL for the VPC endpoint to use to obtain the logs.')
+                        help='URL for the endpoint to use to obtain the logs.')
 
     return parser.parse_args()
 
